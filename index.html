@@ -1,123 +1,29 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>슬라임 키우기 (프로토타입)</title>
-  <link rel="stylesheet" href="./styles.css" />
+<meta charset="UTF-8">
+<title>슬라임 키우기</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; background: #2a251f; overflow: hidden; }
+  #root { width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; }
+  @media (max-width: 500px) {
+    #root { background: #f7f1e3; }
+  }
+</style>
 </head>
 <body>
-  <div id="app">
-    <!-- 상단바 -->
-    <header id="top-bar">
-      <div class="stat" id="stat-gold">💰 <span data-v="gold">0</span>G</div>
-      <div class="stat" id="stat-slimes">🟢 <span data-v="slimeCount">0</span></div>
-      <div class="stat" id="stat-eggs">🥚 <span data-v="eggCount">0</span></div>
-      <button id="btn-food-bag" class="stat food-bag">🎒 <span data-v="foodTotal">0</span></button>
-    </header>
+<div id="root"></div>
 
-    <!-- 선택된 슬라임 정보 (선택 시 표시) -->
-    <div id="selected-info" class="hidden"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
 
-    <!-- 탭 컨텐츠 -->
-    <main id="screen">
-      <!-- 농장 화면 -->
-      <section id="farm-screen" class="screen active">
-        <div id="farm-area">
-          <!-- VIP룸 영역 (농장 내) -->
-          <div id="vip-rooms"></div>
-          <!-- 슬라임 노니는 영역 -->
-          <div id="slime-area"></div>
-        </div>
-        <div id="egg-strip" class="strip">
-          <div class="strip-label">알 목록</div>
-          <div id="egg-list"></div>
-        </div>
-        <div id="tutorial-banner" class="hidden">
-          🐣 알을 기다려보세요! 5분 뒤 아기 슬라임으로 부화합니다.
-          <br>
-          <small>(프로토타입: 시간 배속 버튼 아래)</small>
-        </div>
-      </section>
-
-      <!-- 상점 화면 -->
-      <section id="shop-screen" class="screen">
-        <div class="tab-bar">
-          <button class="tab-btn active" data-shop-tab="buy">먹이 구매</button>
-          <button class="tab-btn" data-shop-tab="unlock">먹이 해금</button>
-          <button class="tab-btn" data-shop-tab="expand">농장 확장</button>
-          <button class="tab-btn" data-shop-tab="vip">VIP룸</button>
-        </div>
-        <div class="tab-content active" data-shop-pane="buy"></div>
-        <div class="tab-content" data-shop-pane="unlock"></div>
-        <div class="tab-content" data-shop-pane="expand"></div>
-        <div class="tab-content" data-shop-pane="vip"></div>
-      </section>
-
-      <!-- 인벤토리 화면 -->
-      <section id="inventory-screen" class="screen">
-        <div class="tab-bar">
-          <button class="tab-btn active" data-inv-tab="slimes">슬라임</button>
-          <button class="tab-btn" data-inv-tab="eggs">알</button>
-        </div>
-        <div class="tab-content active" data-inv-pane="slimes"></div>
-        <div class="tab-content" data-inv-pane="eggs"></div>
-      </section>
-
-      <!-- 도감 화면 -->
-      <section id="compendium-screen" class="screen">
-        <h3>슬라임 도감 <small id="compendium-progress"></small></h3>
-        <div id="compendium-slimes" class="grid"></div>
-        <h3>알 도감</h3>
-        <div id="compendium-eggs" class="grid"></div>
-      </section>
-    </main>
-
-    <!-- 하단 탭 네비게이션 -->
-    <nav id="bottom-nav">
-      <button class="nav-btn active" data-screen="farm-screen">🏠 농장</button>
-      <button class="nav-btn" data-screen="shop-screen">🏪 상점</button>
-      <button class="nav-btn" data-screen="inventory-screen">📦 인벤토리</button>
-      <button class="nav-btn" data-screen="compendium-screen">📖 도감</button>
-    </nav>
-
-    <!-- 디버그 툴바 (프로토타입) -->
-    <div id="debug-bar">
-      <span>🛠 프로토타입</span>
-      <label>배속
-        <select id="speed-select">
-          <option value="1">x1</option>
-          <option value="5">x5</option>
-          <option value="30" selected>x30</option>
-          <option value="60">x60</option>
-          <option value="300">x300</option>
-        </select>
-      </label>
-      <button id="btn-reset">초기화</button>
-    </div>
-
-    <!-- 슬라임 상세 모달 -->
-    <div id="slime-modal" class="modal hidden">
-      <div class="modal-backdrop" data-close></div>
-      <div class="modal-body" id="slime-modal-body"></div>
-    </div>
-
-    <!-- 먹이 가방 모달 -->
-    <div id="food-modal" class="modal hidden">
-      <div class="modal-backdrop" data-close></div>
-      <div class="modal-body" id="food-modal-body"></div>
-    </div>
-
-    <!-- 확인 모달 -->
-    <div id="confirm-modal" class="modal hidden">
-      <div class="modal-backdrop"></div>
-      <div class="modal-body" id="confirm-modal-body"></div>
-    </div>
-
-    <!-- 토스트 -->
-    <div id="toast-container"></div>
-  </div>
-
-  <script type="module" src="./src/main.js"></script>
+<script type="text/babel" src="src/data.jsx"></script>
+<script type="text/babel" src="src/theme.jsx"></script>
+<script type="text/babel" src="src/farm-screen.jsx"></script>
+<script type="text/babel" src="src/modals.jsx"></script>
+<script type="text/babel" src="src/other-screens.jsx"></script>
+<script type="text/babel" src="src/main.jsx"></script>
 </body>
 </html>
